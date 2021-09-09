@@ -88,7 +88,7 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
 
-    fringe = util.Stack()
+    fringe = Stack()
     initial = (problem.getStartState(), [], [])
     fringe.push(initial)
     visited = []
@@ -132,7 +132,7 @@ def uniformCostSearch(problem):
 
     while not fringe.isEmpty():
         location, path = fringe.pop()
-        count_tracker[location]= 0
+        count_tracker[location]= problem.getCostOfActions(path)
         if problem.isGoalState(location):
             return path
         if not location in visited:
@@ -157,7 +157,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     count_tracker = Counter()
     initial = (problem.getStartState(), [])    
     count_tracker[str(initial[0])] += heuristic(initial[0], problem)
-    fringe.push(current, count_tracker[str(initial[0])])
+    fringe.push(initial, count_tracker[str(initial[0])])
     visited = []
     
     while not fringe.isEmpty():
@@ -168,8 +168,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             visited.append(location)
             for new_loc, added_path, added_cost in problem.getSuccessors(location):
                 path2 = path + [added_path]
-                counts[str(new_loc)] = problem.getCostOfActions(path2)
-                counts[str(new_loc)] += heuristic(new_loc, problem)
+                count_tracker[str(new_loc)] = problem.getCostOfActions(path2)
+                count_tracker[str(new_loc)] += heuristic(new_loc, problem)
                 fringe.push((new_loc, path2), count_tracker[str(new_loc)]) 
     #util.raiseNotDefined()
 
