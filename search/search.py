@@ -17,7 +17,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
-from util import Stack, Queue, PriorityQueue, Counter, PriorityQueueWithFunction
+from util import Stack, Queue, Counter, PriorityQueue, PriorityQueueWithFunction
 
 class SearchProblem:
     """
@@ -88,44 +88,60 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
 
-    fringe = Stack()
-    
-    current = (problem.getStartState(), [], [])
-    fringe.push(current)
+    fringe = util.Stack()
+    initial = (problem.getStartState(), [], [])
+    fringe.push(initial)
     visited = []
         
     while not fringe.isEmpty():
-        node, path, total = fringe.pop()
-        if problem.isGoalState(node):
+        location, path, total = fringe.pop()
+        if problem.isGoalState(location):
             return path
-        if not node in visited:
-            visited.append(node)
-            for coord, move, cost in problem.getSuccessors(node):
-                fringe.push((coord, path + [move], total + [cost])) 
+        if not location in visited:
+            visited.append(location)
+            for new_loc, added_path, added_cost in problem.getSuccessors(location):
+                fringe.push((new_loc, path + [added_path], total + [added_cost])) 
     #util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***" 
     fringe = Queue()
-    current = (problem.getStartState(), [])
-    fringe.push(current)
+    initial = (problem.getStartState(), [])
+    fringe.push(initial)
     visited = []
     
     while not fringe.isEmpty():
-        node, path = fringe.pop()
-        if problem.isGoalState(node):
+        location, path = fringe.pop()
+        if problem.isGoalState(location):
             return path
-        if not node in visited:
-            visited.append(node)
-            for coord, move, cost in problem.getSuccessors(node):
-                fringe.push((coord, path + [move])) 
+        if not location in visited:
+            visited.append(location)
+            for new_loc, added_path, added_cost in problem.getSuccessors(location):
+                fringe.push((new_loc, path + [added_path]))
     #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    fringe = PriorityQueue()
+    count_tracker = Counter()
+    initial = (problem.getStartState(), [])
+    fringe.push(initial, 0)
+    visited = []
+
+    while not fringe.isEmpty():
+        location, path = fringe.pop()
+        count_tracker[location]= 0
+        if problem.isGoalState(location):
+            return path
+        if not location in visited:
+            visited.append(location)
+            for new_loc, added_path, added_cost in problem.getSuccessors(location):
+                count_tracker[new_loc] = count_tracker[location]
+                count_tracker[new_loc] += added_cost
+                fringe.push((new_loc, path + [added_path]), count_tracker[new_loc])
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -137,7 +153,25 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    fringe = PriorityQueue()
+    count_tracker = Counter()
+    initial = (problem.getStartState(), [])    
+    count_tracker[str(initial[0])] += heuristic(initial[0], problem)
+    fringe.push(current, count_tracker[str(initial[0])])
+    visited = []
+    
+    while not fringe.isEmpty():
+        location, path = fringe.pop()
+        if problem.isGoalState(location):
+            return path
+        if not location in visited:
+            visited.append(location)
+            for new_loc, added_path, added_cost in problem.getSuccessors(location):
+                path2 = path + [added_path]
+                counts[str(new_loc)] = problem.getCostOfActions(path2)
+                counts[str(new_loc)] += heuristic(new_loc, problem)
+                fringe.push((new_loc, path2), count_tracker[str(new_loc)]) 
+    #util.raiseNotDefined()
 
 
 # Abbreviations
