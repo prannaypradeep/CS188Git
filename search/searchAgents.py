@@ -334,7 +334,7 @@ class CornersProblem(search.SearchProblem):
             hitsWall = self.walls[nextx][nexty]
             "*** YOUR CODE HERE ***"
 
-            if not hitsWall:
+            if not (hitsWall):
                 cor = state[2].copy()
                 bools = state[3].copy()
                 for i in range(0, len(cor)):
@@ -378,14 +378,13 @@ def cornersHeuristic(state, problem):
 
     lowbound = 0
     for i in range(0, len(corners)):
-
+        x = state[0]
+        y = state[1]
         if(state[3][i] == False):
-            x = state[0]
-            y = state[1]
             heuristic = abs(x - corners[i][0]) + abs(y - corners[i][1])
             if(heuristic > lowbound):
                 lowbound = heuristic
-    return lowbound
+    return lowbound 
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -510,7 +509,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.uniformCostSearch(problem) 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -546,7 +545,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y] == True
+    
 
 def mazeDistance(point1, point2, gameState):
     """
