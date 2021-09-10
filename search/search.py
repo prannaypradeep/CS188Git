@@ -102,25 +102,25 @@ def depthFirstSearch(problem):
             for new_loc, added_path, added_cost in problem.getSuccessors(location):
                 fringe.push((new_loc, path + [added_path], total + [added_cost])) 
     #util.raiseNotDefined()
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***" 
     fringe = Queue()
-    initial = (problem.getStartState(), [])
-    fringe.push(initial)
+    current = (problem.getStartState(), [])
+    fringe.push(current)
     visited = []
     
     while not fringe.isEmpty():
-        location, path = fringe.pop()
-        if problem.isGoalState(location):
+        node, path = fringe.pop()
+        if problem.isGoalState(node):
             return path
-        if not location in visited:
-            visited.append(location)
-            for new_loc, added_path, added_cost in problem.getSuccessors(location):
-                fringe.push((new_loc, path + [added_path]))
+        if not node in visited:
+            visited.append(node)
+            for coord, move, cost in problem.getSuccessors(node):
+                fringe.push((coord, path + [move])) 
     #util.raiseNotDefined()
 
+                
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
