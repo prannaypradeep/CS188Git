@@ -74,12 +74,26 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
+        ghostLoc = successorGameState.getGhostPosition(-1)
 
-        newFoodList = newFood.asList()
+        myScore = successorGameState.getScore()
+        foodList = newFood.asList()
 
+        if action == Directions.STOP:
+            myScore -= 2
+        elif newPos in currentGameState.getCapsules():
+            myScore += 5
+        
+        minDist = 5
+        for fod in foodList:
+            manhattanDist = util.manhattanDistance(newPos, fod)
+            if manhattanDist < minDist:
+                minDist = manhattanDist
+ 
+        myScore += 1/minDist**0.5
+        return myScore        
 
-
-        return successorGameState.getScore()
+        
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -269,7 +283,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         for act in gameState.getLegalActions(ghostIndex):
             new_score = score
             if(ghostIndex == gameState.getNumAgents() - 1):
-                score += self.maxAgentHel   per(gameState.generateSuccessor(ghostIndex,act), dep - 1, 0)[0]
+                score += self.maxAgentHelper(gameState.generateSuccessor(ghostIndex,act), dep - 1, 0)[0]
             else:
                 score += self.minAgentHelper(gameState.generateSuccessor(ghostIndex,act), dep, ghostIndex + 1)[0]
             len+=1
@@ -280,10 +294,21 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: This is a cleaner, more efficient evaluation function. Instead of tracking ghost distances
+    individuaklly and storing these values, as well as the various states of the ghpsts, this
+    simply calculates and returns a score based on the relevant details: the number of food pellets the Pacman
+    ate, the minimum distance at all times, and of course, the current score of the Pacman.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    foodList = currentGameState.getFood().asList()
+    distList = [manhattanDistance(currentGameState.getPacmanPosition(), fod) for fod in foodList]
 
+    if len(distList) != 0:
+        minDist = min(distList)
+    else:
+        minDist = 0
+
+    myScore = currentGameState.getScore() - minDist - 10 * currentGameState.getNumFood() 
+    return myScore
 # Abbreviation
 better = betterEvaluationFunction
