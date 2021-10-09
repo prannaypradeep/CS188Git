@@ -160,10 +160,20 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
         if(len(self.mdp.getPossibleActions(state)) != 0):
           self.values[state] = self.computeQValueFromValues(state, self.computeActionFromValues(state))
 
+
+
+
+
+
+
+
+
+
+
+
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
     """
         * Please read learningAgents.py before reading this.*
-
         A PrioritizedSweepingValueIterationAgent takes a Markov decision process
         (see mdp.py) on initialization and runs prioritized sweeping value iteration
         for a given number of iterations using the supplied parameters.
@@ -178,9 +188,52 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         ValueIterationAgent.__init__(self, mdp, discount, iterations)
 
     def runValueIteration(self):
-        pq = util.PriorityQueue()
+        "*** YOUR CODE HERE ***"
+        priorityQueue = util.PriorityQueue()
+        prevs = {}
+        possibleStates = self.mdp.getStates()
+        for possibleState in possibleStates:
+          if not self.mdp.isTerminal(possibleState):
+            possibleActions = self.mdp.getPossibleActions(possibleState)
+            
+            for possibleAction in possibleActions:  
 
-        for state in self.mdp.getStates():
-          if(len(self.mdp.getPossibleActions(state)) != 0):
-            for action in 
+              for i, j in self.mdp.getTransitionStatesAndProbs(possibleState, possibleAction):
+                if i not in prevs:
+                  prevs[i] = {possibleState}
+                else:
+                  prevs[i].add(possibleState)
 
+                  
+
+        #Prannay: I made this edit since last time
+        possibleStates = self.mdp.getStates()
+        for possibleState in possibleStates:
+          if not self.mdp.isTerminal(possibleState):
+            arr = []
+            possibleActions = self.mdp.getPossibleActions(possibleState)
+            for possibleAction in possibleActions:
+              arr.append(self.computeQValueFromValues(possibleState, possibleAction))
+            diff = -1 * abs(self.values[possibleState] - max(arr))
+            priorityQueue.update(possibleState, diff)
+
+        for iteration in range(self.iterations):
+          if priorityQueue.isEmpty():
+            break
+          dummy = priorityQueue.pop()
+          if not self.mdp.isTerminal(dummy):
+            arr = []
+            possibleActions = self.mdp.getPossibleActions(dummy)
+            for possibleAction in possibleActions:
+              arr.append(self.computeQValueFromValues(dummy, possibleAction))
+            self.values[dummy] = max(arr)
+
+          for x in prevs[dummy]:
+            if not self.mdp.isTerminal(x):
+              arr = []
+              possibleActions = self.mdp.getPossibleActions(x)
+              for possibleAction in possibleActions:
+                arr.append(self.computeQValueFromValues(x, possibleAction))
+              diff = abs(self.values[x] - max(arr))
+              if self.theta < diff:
+                priorityQueue.update(x, diff * -1)
